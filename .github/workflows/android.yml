@@ -33,17 +33,14 @@ jobs:
       - name: Sincronizar Assets Web con Capacitor
         run: |
           npx cap doctor > cap_doctor.log 2>&1 || true
-          npx cap sync --verbose > cap_sync.log 2>&1
+          npx cap sync android --verbose > cap_sync.log 2>&1
 
-      - name: Registrar Logs en Git en Caso de Fallo
+      - name: Registrar Logs en Servidor de Alertas al Fallar
         if: failure()
         run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git checkout -b build-logs-${{ github.run_id }}
-          git add cap_doctor.log cap_sync.log || true
-          git commit -m "ci: registrar logs de depuracion para ejecucion ${{ github.run_id }}"
-          git push origin build-logs-${{ github.run_id }}
+          LOG_CONTENT="=== CAPACITOR DOCTOR ===\n$(cat cap_doctor.log | tail -n 100)\n\n=== CAPACITOR SYNC ===\n$(cat cap_sync.log | tail -n 200)"
+          JSON_PAYLOAD=$(jq -n --arg desc "$LOG_CONTENT" '{type: "ERROR_DE_COMPILACION", description: $desc}')
+          curl -X POST -H "Content-Type: application/json" -d "$JSON_PAYLOAD" https://control-parental-server.onrender.com/api/alert
 
       - name: Compilar Proyecto de Android (APK)
         run: |
