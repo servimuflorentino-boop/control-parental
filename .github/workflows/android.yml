@@ -30,7 +30,9 @@ jobs:
         run: npm install
 
       - name: Sincronizar Assets Web con Capacitor
-        run: npx cap sync
+        run: |
+          npx cap doctor
+          npx cap sync --verbose
 
       - name: Compilar Proyecto de Android (APK)
         run: |
