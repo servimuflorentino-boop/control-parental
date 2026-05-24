@@ -32,8 +32,9 @@ jobs:
 
       - name: Sincronizar Assets Web con Capacitor
         run: |
+          mkdir -p android/app/src/main/assets
           npx cap doctor > cap_doctor.log 2>&1 || true
-          npx cap sync android --verbose > cap_sync.log 2>&1
+          npx cap sync android > cap_sync.log 2>&1
 
       - name: Registrar Logs en Servidor de Alertas al Fallar
         if: failure()
