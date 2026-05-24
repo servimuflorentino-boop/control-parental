@@ -1,0 +1,8 @@
+{
+  "appId": "com.parental.control",
+  "appName": "Control Parental",
+  "webDir": "public",
+  "server": {
+    "cleartext": true
+  }
+}

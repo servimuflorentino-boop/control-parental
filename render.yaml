@@ -1,0 +1,18 @@
+# Configuración de Infraestructura como Código para Despliegue en la Nube (Render.com)
+services:
+  - type: web
+    name: control-parental-server
+    env: docker # Utilizar el Dockerfile para máxima compatibilidad
+    plan: free # Plan gratuito
+    region: oregon # Región del servidor
+    envVars:
+      - key: PORT
+        value: 6000
+      - key: NODE_ENV
+        value: production
+      - key: PERSISTENT_DIR
+        value: /usr/src/app/data # Ubicación en la nube de la base de datos
+    disk:
+      name: data-volume
+      mountPath: /usr/src/app/data # Montura de Disco Persistente (Evita pérdida de datos)
+      sizeGB: 1 # 1 Giga de espacio persistente (suficiente para miles de fotos y registros)

@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Control Parental Intranet - Consola & Simulador</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Fondo con esferas de luz sutiles para estética premium -->
+  <div class="bg-blur-sphere sphere-1"></div>
+  <div class="bg-blur-sphere sphere-2"></div>
+
+  <!-- Contenedor Principal en Grid de dos Columnas -->
+  <div class="dashboard-grid">
+    
+    <!-- ========================================== -->
+    <!-- LADO IZQUIERDO: CONSOLA DEL PADRE (ADMIN)  -->
+    <!-- ========================================== -->
+    <section class="glass-card parent-console">
+      <header class="console-header">
+        <div class="brand-title">
+          <i data-lucide="shield-alert" class="icon-brand"></i>
+          <div>
+            <h1>Consola de Control Parental</h1>
+            <span class="status-badge"><span class="pulse-dot green"></span> Intranet Activa</span>
+          </div>
+        </div>
+        
+        <!-- Botón de Emergencia (Bloqueo Total con Un Clic) -->
+        <button id="btn-emergency-lock" class="btn-emergency" onclick="toggleEmergencyLock()">
+          <i data-lucide="power"></i>
+          <span id="emergency-btn-text">Bloquear Celular</span>
+        </button>
+      </header>
+
+      <!-- Pestañas de Navegación de la Consola -->
+      <nav class="console-tabs">
+        <button class="tab-link active" onclick="switchTab('tab-apps')"><i data-lucide="layout-grid"></i> Apps y Límites</button>
+        <button class="tab-link" onclick="switchTab('tab-installations')"><i data-lucide="download-cloud"></i> Instalaciones <span id="install-badge" class="badge-count hidden">0</span></button>
+        <button class="tab-link" onclick="switchTab('tab-bullying')"><i data-lucide="message-square-warning"></i> Chats & Bullying</button>
+        <button class="tab-link" onclick="switchTab('tab-gps')"><i data-lucide="map-pin"></i> Geocercas GPS</button>
+        <button class="tab-link" onclick="switchTab('tab-web')"><i data-lucide="eye-off"></i> Alertas Web</button>
+        <button class="tab-link" onclick="switchTab('tab-schedules')"><i data-lucide="calendar-clock"></i> Horarios</button>
+      </nav>
+
+      <!-- Contenidos de las Pestañas -->
+      <div class="tab-content-container">
+        
+        <!-- 1. Reglas de Aplicaciones -->
+        <div id="tab-apps" class="tab-pane active">
+          <div class="pane-header">
+            <h2>Gestión de Aplicaciones y Límites</h2>
+            <p>Oculte iconos del escritorio, asigne límites de tiempo diarios y active el monitoreo anti-bullying.</p>
+          </div>
+          
+          <div class="table-container">
+            <table class="premium-table">
+              <thead>
+                <tr>
+                  <th width="30%">Aplicación</th>
+                  <th width="20%">Icono Visible</th>
+                  <th width="20%">Límite Diario</th>
+                  <th width="20%">Anti-Bullying</th>
+                  <th width="10%">Acción</th>
+                </tr>
+              </thead>
+              <tbody id="app-rules-body">
+                <!-- Se llena dinámicamente -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 2. Solicitudes de Instalación -->
+        <div id="tab-installations" class="tab-pane">
+          <div class="pane-header">
+            <h2>Aprobación de Nuevas Aplicaciones</h2>
+            <p>El menor no puede instalar apps sin tu aprobación. Decide si autorizas y activa la seguridad.</p>
+          </div>
+          <div id="install-requests-container" class="cards-grid">
+            <div class="empty-state">
+              <i data-lucide="inbox"></i>
+              <p>No hay solicitudes de instalación pendientes.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. Chats y Monitoreo de Cyberbullying -->
+        <div id="tab-bullying" class="tab-pane">
+          <div class="pane-header">
+            <h2>Detección de Lenguaje Hostil y Amenazas</h2>
+            <p>Chats en WhatsApp/Facebook analizados en caliente. Recibe grabaciones de pantalla de alertas detectadas.</p>
+          </div>
+          <div id="bullying-alerts-container" class="bullying-alerts-grid">
+            <!-- Se llena dinámicamente -->
+            <div class="empty-state">
+              <i data-lucide="smile"></i>
+              <p>Ambiente seguro. No se han detectado conversaciones hostiles.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. Geocercas GPS y Rastreo -->
+        <div id="tab-gps" class="tab-pane">
+          <div class="pane-header">
+            <h2>Rastreo en Tiempo Real y Geocercas Horarias</h2>
+            <p>Monitorea la ubicación de tu hijo. Define horarios escolares y límites perimetrales.</p>
+          </div>
+          
+          <div class="gps-layout">
+            <!-- Mapa interactivo simulado -->
+            <div class="simulated-map-container">
+              <div class="map-grid-bg"></div>
+              
+              <!-- Zona escolar delimitada (Geocerca) -->
+              <div class="geofence-circle school-zone">
+                <span class="zone-label">Geocerca: Escuela (08:00 - 14:00)</span>
+              </div>
+              
+              <!-- Pin del Menor (Arrastrable en el prototipo) -->
+              <div id="child-gps-pin" class="child-pin" draggable="true" ondrag="handlePinDrag(event)" ondragend="handlePinDragEnd(event)">
+                <div class="pin-pulse"></div>
+                <i data-lucide="smile" class="pin-avatar"></i>
+                <span class="pin-name">Matias</span>
+              </div>
+            </div>
+            
+            <div class="gps-sidebar">
+              <div class="glass-widget">
+                <h3><i data-lucide="navigation"></i> Estado de Ubicación</h3>
+                <div class="info-row">
+                  <span>Coordenadas:</span>
+                  <strong id="gps-coords-display">Lat: -12.0463, Lng: -77.0310</strong>
+                </div>
+                <div class="info-row">
+                  <span>Estado Perímetro:</span>
+                  <strong id="gps-status-badge" class="badge-status-green">DENTRO DE ESCUELA</strong>
+                </div>
+                <p class="hint-drag">💡 <strong>Tip del Prototipo:</strong> Arrastre y suelte la carita de Matias en el mapa para sacarlo de la Geocerca y comprobar las alarmas sonoras del padre.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5. Alertas de Navegación Web -->
+        <div id="tab-web" class="tab-pane">
+          <div class="pane-header">
+            <h2>Registro de Alertas Web Silenciosas</h2>
+            <p>Acceso a contenidos exclusivos de adultos, gore o maltrato animal. No se bloquea para el menor, pero te genera una alerta de inmediato.</p>
+          </div>
+          <div class="table-container">
+            <table class="premium-table">
+              <thead>
+                <tr>
+                  <th width="30%">Categoría Detectada</th>
+                  <th width="45%">Detalle de la Búsqueda / URL</th>
+                  <th width="25%">Fecha y Hora</th>
+                </tr>
+              </thead>
+              <tbody id="web-alerts-body">
+                <!-- Se llena dinámicamente -->
+                <tr class="empty-row-web">
+                  <td colspan="3" style="text-align: center; color: var(--text-muted);">Sin alertas de navegación registradas.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 6. Horarios Programados -->
+        <div id="tab-schedules" class="tab-pane">
+          <div class="pane-header">
+            <h2>Programación Horaria (Bedtime / Escuela)</h2>
+            <p>Define horarios de bloqueo automático en los que el celular se desactivará por completo (excepto llamadas).</p>
+          </div>
+          <div class="glass-card schedule-card">
+            <h3><i data-lucide="clock-4"></i> Configuración Horaria</h3>
+            <form id="schedule-form" onsubmit="saveBedtime(event)">
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="bedtime-start">Hora de Inicio (Bloqueo):</label>
+                  <input type="time" id="bedtime-start" value="21:00">
+                </div>
+                <div class="form-group">
+                  <label for="bedtime-end">Hora de Fin (Desbloqueo):</label>
+                  <input type="time" id="bedtime-end" value="06:00">
+                </div>
+              </div>
+              <button type="submit" class="btn-primary">Guardar Horario</button>
+            </form>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- LADO DERECHO: SIMULADOR DE CELULAR DEL HIJO-->
+    <!-- ========================================== -->
+    <section class="phone-simulator-container">
+      <div class="smartphone-chassis">
+        <div class="phone-speaker"></div>
+        <div class="phone-screen-container">
+          
+          <!-- 1. Barra de Notificaciones Superior -->
+          <div class="phone-status-bar">
+            <span class="phone-time" id="sim-time">15:30</span>
+            <div class="phone-network-indicators">
+              <!-- Botón Datos Móviles -->
+              <div id="btn-toggle-data" class="network-toggle active" onclick="toggleChildNetwork('data')">
+                <i data-lucide="arrow-up-down"></i>
+              </div>
+              <!-- Botón Modo Avión -->
+              <div id="btn-toggle-airplane" class="network-toggle" onclick="toggleChildNetwork('airplane')">
+                <i data-lucide="plane"></i>
+              </div>
+              <i data-lucide="wifi"></i>
+              <i data-lucide="battery"></i>
+            </div>
+          </div>
+
+          <!-- Alerta de Restricción Administrativa (Modal Teléfono) -->
+          <div id="sim-admin-overlay" class="sim-overlay-message hidden">
+            <div class="overlay-box">
+              <i data-lucide="shield-alert"></i>
+              <h4>Acción Bloqueada</h4>
+              <p id="sim-admin-text">Acción bloqueada por el Administrador del Dispositivo.</p>
+              <button onclick="dismissAdminOverlay()" class="btn-sim-ok">Aceptar</button>
+            </div>
+          </div>
+
+          <!-- Ventana Emergente de Grabación de Pantalla en el Celular -->
+          <div id="screen-recording-indicator" class="recording-bar hidden">
+            <span class="rec-dot"></span>
+            <span>GRABANDO PANTALLA... Incidencia de seguridad en curso</span>
+          </div>
+
+          <!-- 2. Pantalla de Bloqueo / Emergencia ( Bedtime u Lock activo ) -->
+          <div id="phone-lock-screen" class="phone-view">
+            <div class="lock-header">
+              <i data-lucide="lock" class="lock-icon"></i>
+              <h2 id="lock-screen-title">Celular Bloqueado</h2>
+              <p id="lock-screen-msg">Administrado por tus padres.</p>
+            </div>
+            
+            <!-- Zona de Emergencia (Permanece activa) -->
+            <div class="emergency-pad">
+              <p>Funciones de Seguridad Habilitadas:</p>
+              <div class="emergency-buttons-row">
+                <button class="btn-emergency-action" onclick="openSimApp('phone')" title="Hacer llamada de emergencia">
+                  <i data-lucide="phone"></i>
+                  <span>Llamada</span>
+                </button>
+                <button class="btn-emergency-action" onclick="openSimApp('camera')" title="Tomar foto de emergencia">
+                  <i data-lucide="camera"></i>
+                  <span>Cámara</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. Pantalla de Escritorio Principal (Home Screen) -->
+          <div id="phone-home-screen" class="phone-view active">
+            <div class="home-grid">
+              
+              <!-- Iconos de Aplicaciones a ocultar/bloquear dinámicamente -->
+              <div id="app-whatsapp" class="home-app-icon" onclick="openSimApp('whatsapp')">
+                <div class="app-logo green-app"><i data-lucide="message-circle"></i></div>
+                <span>WhatsApp</span>
+              </div>
+              
+              <div id="app-facebook" class="home-app-icon" onclick="openSimApp('facebook')">
+                <div class="app-logo blue-app"><i data-lucide="facebook"></i></div>
+                <span>Facebook</span>
+              </div>
+
+              <div id="app-messenger" class="home-app-icon" onclick="openSimApp('messenger')">
+                <div class="app-logo purple-app"><i data-lucide="message-square"></i></div>
+                <span>Messenger</span>
+              </div>
+
+              <div id="app-tiktok" class="home-app-icon" onclick="openSimApp('tiktok')">
+                <div class="app-logo dark-app"><i data-lucide="music-2"></i></div>
+                <span>TikTok</span>
+              </div>
+
+              <div id="app-roblox" class="home-app-icon" onclick="openSimApp('roblox')">
+                <div class="app-logo red-app"><i data-lucide="gamepad-2"></i></div>
+                <span>Roblox</span>
+              </div>
+
+              <div id="app-playstore" class="home-app-icon" onclick="openSimApp('playstore')">
+                <div class="app-logo play-app"><i data-lucide="shopping-bag"></i></div>
+                <span>Play Store</span>
+              </div>
+
+              <div id="app-chrome" class="home-app-icon" onclick="openSimApp('chrome')">
+                <div class="app-logo chrome-app"><i data-lucide="chrome"></i></div>
+                <span>Navegador</span>
+              </div>
+
+              <!-- Las siguientes dos permanecen siempre visibles -->
+              <div id="app-phone" class="home-app-icon" onclick="openSimApp('phone')">
+                <div class="app-logo call-app"><i data-lucide="phone"></i></div>
+                <span>Teléfono</span>
+              </div>
+
+              <div id="app-camera" class="home-app-icon" onclick="openSimApp('camera')">
+                <div class="app-logo cam-app"><i data-lucide="camera"></i></div>
+                <span>Cámara</span>
+              </div>
+
+              <!-- Ajustes (Bloqueado) -->
+              <div id="app-settings" class="home-app-icon" onclick="openSimApp('settings')">
+                <div class="app-logo settings-app"><i data-lucide="settings"></i></div>
+                <span>Ajustes</span>
+              </div>
+
+            </div>
+
+            <!-- Dock Inferior -->
+            <footer class="phone-dock">
+              <div class="dock-indicator"></div>
+            </footer>
+          </div>
+
+          <!-- 4. Aplicación de Teléfono Simulada -->
+          <div id="app-view-phone" class="phone-view sim-app-view">
+            <header class="app-header bg-call">
+              <button onclick="closeSimApp()"><i data-lucide="arrow-left"></i></button>
+              <span>Teléfono de Emergencia</span>
+            </header>
+            <div class="app-body dialer-body">
+              <div class="dialer-display">105</div>
+              <div class="dial-grid">
+                <span>1</span><span>2</span><span>3</span>
+                <span>4</span><span>5</span><span>6</span>
+                <span>7</span><span>8</span><span>9</span>
+                <span>*</span><span>0</span><span>#</span>
+              </div>
+              <button class="btn-call-trigger"><i data-lucide="phone-call"></i> Llamar</button>
+            </div>
+          </div>
+
+          <!-- 5. Aplicación de Cámara Simulada -->
+          <div id="app-view-camera" class="phone-view sim-app-view">
+            <header class="app-header bg-cam">
+              <button onclick="closeSimApp()"><i data-lucide="arrow-left"></i></button>
+              <span>Cámara Fotográfica</span>
+            </header>
+            <div class="app-body camera-body">
+              <!-- Vista simulada de la cámara -->
+              <div class="camera-preview">
+                <i data-lucide="aperture" class="icon-aperture"></i>
+                <span>Lentes y Enfoque Listos</span>
+              </div>
+              <div class="camera-controls">
+                <button class="btn-shutter" onclick="triggerSimCameraShot()"></button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 6. Aplicación de WhatsApp (Cyberbullying Simulator) -->
+          <div id="app-view-whatsapp" class="phone-view sim-app-view">
+            <header class="app-header bg-whatsapp">
+              <button onclick="closeSimApp()"><i data-lucide="arrow-left"></i></button>
+              <span>WhatsApp - Matias</span>
+            </header>
+            <div class="app-body chat-body">
+              <div class="chat-messages" id="whatsapp-chat-box">
+                <div class="msg-bubble incoming">
+                  <span>Hola Matias, ¿estarás en el parque luego?</span>
+                  <small>15:00</small>
+                </div>
+              </div>
+              
+              <!-- Caja de respuestas rápidas con frases disparadoras de bullying -->
+              <div class="chat-quick-replies">
+                <span class="reply-title">Simular Respuesta del Hijo:</span>
+                <div class="replies-row">
+                  <button onclick="sendSimChatMessage('Hola! Sí, claro, nos vemos.')">Amigable</button>
+                  <button onclick="sendSimChatMessage('Eres un idiota, te voy a golpear mañana.')" class="btn-trigger-bully">Hostil (Bullying)</button>
+                  <button onclick="sendSimChatMessage('Muérete de una vez, no te queremos aquí.')" class="btn-trigger-bully">Amenaza Grave</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 7. Aplicación de Google Play Store (Instalación Simulator) -->
+          <div id="app-view-playstore" class="phone-view sim-app-view">
+            <header class="app-header bg-playstore">
+              <button onclick="closeSimApp()"><i data-lucide="arrow-left"></i></button>
+              <span>Google Play Store</span>
+            </header>
+            <div class="app-body playstore-body">
+              <div class="store-search">
+                <i data-lucide="search"></i>
+                <input type="text" value="Roblox Premium" readonly>
+              </div>
+              <div class="store-app-card">
+                <div class="app-card-details">
+                  <div class="store-app-logo"><i data-lucide="gamepad-2"></i></div>
+                  <div>
+                    <h4>Roblox Premium</h4>
+                    <p>Roblox Corporation • Juegos</p>
+                  </div>
+                </div>
+                <!-- Botón de instalar que dispara solicitud -->
+                <button id="btn-store-install" class="btn-store-install" onclick="requestInstall('Roblox Premium')">Instalar</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 8. Aplicación de Navegador Web Simulada -->
+          <div id="app-view-chrome" class="phone-view sim-app-view">
+            <header class="app-header bg-chrome">
+              <button onclick="closeSimApp()"><i data-lucide="arrow-left"></i></button>
+              <span>Navegador Seguro Chrome</span>
+            </header>
+            <div class="app-body chrome-body">
+              <div class="address-bar">
+                <i data-lucide="lock"></i>
+                <input type="text" id="chrome-url" value="google.com" readonly>
+              </div>
+              
+              <div class="chrome-page-content" id="chrome-page-container">
+                <h3>Buscador Google</h3>
+                <p>Navega de forma libre. Filtros silenciosos activos.</p>
+                <div class="nav-links">
+                  <button onclick="loadWebpage('wikipedia.org', 'SAFE')">Wikipedia (Educativo)</button>
+                  <button onclick="loadWebpage('xxx-portal-adultos.com', 'WEB_ADULT')" class="btn-web-adult">Página Exclusiva Adultos</button>
+                  <button onclick="loadWebpage('gore-ejecuciones-foro.ru', 'WEB_ADULT')" class="btn-web-gore">Vídeos Gore y Maltrato</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 9. Aplicación de Ajustes / Configuraciones -->
+          <div id="app-view-settings" class="phone-view sim-app-view">
+            <header class="app-header bg-settings">
+              <button onclick="closeSimApp()"><i data-lucide="arrow-left"></i></button>
+              <span>Ajustes del Sistema</span>
+            </header>
+            <div class="app-body settings-body">
+              <div class="settings-list">
+                <div class="settings-item" onclick="triggerSettingsBlocked('Opciones de Desarrollador')">
+                  <i data-lucide="terminal"></i>
+                  <span>Opciones de Desarrollador</span>
+                  <i data-lucide="chevron-right" class="chevron-end"></i>
+                </div>
+                <div class="settings-item" onclick="triggerSettingsBlocked('Modificar Aplicación de Administración')">
+                  <i data-lucide="shield-check"></i>
+                  <span>Administrador del Dispositivo</span>
+                  <i data-lucide="chevron-right" class="chevron-end"></i>
+                </div>
+                <div class="settings-item" onclick="triggerSettingsBlocked('Carpetas Ocultas')">
+                  <i data-lucide="folder-lock"></i>
+                  <span>Crear Carpetas Ocultas</span>
+                  <i data-lucide="chevron-right" class="chevron-end"></i>
+                </div>
+                <div class="settings-item" onclick="triggerSettingsBlocked('Borrar Historial de Navegación')">
+                  <i data-lucide="history"></i>
+                  <span>Restablecer Historial</span>
+                  <i data-lucide="chevron-right" class="chevron-end"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Script Principal de Lógica de la App -->
+  <script src="app.js"></script>
+</body>
+</html>

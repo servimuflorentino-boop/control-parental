@@ -1,0 +1,27 @@
+# Dependencias de Node.js
+node_modules/
+
+# Archivos de Datos Locales y Bases de Datos (Seguridad)
+data/
+*.db
+*.db-journal
+
+# Logs de error y del sistema
+logs/
+*.log
+npm-debug.log*
+
+# Configuraciones de Entorno Sensibles
+.env
+
+# Archivos temporales y de compilación de Android
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+android/captures/
+.gradletasknamecache
+
+# Archivos del Sistema Operativo
+.DS_Store
+Thumbs.db

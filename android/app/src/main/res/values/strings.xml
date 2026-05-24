@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Control Parental</string>
+    <string name="title_activity_main">Control Parental</string>
+    <string name="package_name">com.parental.control</string>
+    <string name="custom_url_scheme">com.parental.control</string>
+</resources>
