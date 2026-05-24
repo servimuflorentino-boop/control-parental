@@ -11,8 +11,4 @@ services:
       - key: NODE_ENV
         value: production
       - key: PERSISTENT_DIR
-        value: /usr/src/app/data # Ubicación en la nube de la base de datos
-    disk:
-      name: data-volume
-      mountPath: /usr/src/app/data # Montura de Disco Persistente (Evita pérdida de datos)
-      sizeGB: 1 # 1 Giga de espacio persistente (suficiente para miles de fotos y registros)
+        value: /usr/src/app/data # Ubicación local en el contenedor para la base de datos
