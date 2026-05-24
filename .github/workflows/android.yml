@@ -10,6 +10,7 @@ jobs:
   build:
     name: Compilar APK en la Nube
     runs-on: ubuntu-latest
+    permissions: write-all
 
     steps:
       - name: Descargar Código desde GitHub
@@ -31,8 +32,18 @@ jobs:
 
       - name: Sincronizar Assets Web con Capacitor
         run: |
-          npx cap doctor
-          npx cap sync --verbose
+          npx cap doctor > cap_doctor.log 2>&1 || true
+          npx cap sync --verbose > cap_sync.log 2>&1
+
+      - name: Registrar Logs en Git en Caso de Fallo
+        if: failure()
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout -b build-logs-${{ github.run_id }}
+          git add cap_doctor.log cap_sync.log || true
+          git commit -m "ci: registrar logs de depuracion para ejecucion ${{ github.run_id }}"
+          git push origin build-logs-${{ github.run_id }}
 
       - name: Compilar Proyecto de Android (APK)
         run: |
