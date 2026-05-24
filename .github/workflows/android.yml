@@ -39,7 +39,7 @@ jobs:
         if: failure()
         run: |
           LOG_CONTENT="=== CAPACITOR DOCTOR ===\n$(cat cap_doctor.log | tail -n 100)\n\n=== CAPACITOR SYNC ===\n$(cat cap_sync.log | tail -n 200)"
-          JSON_PAYLOAD=$(jq -n --arg desc "$LOG_CONTENT" '{type: "ERROR_DE_COMPILACION", description: $desc}')
+          JSON_PAYLOAD=$(jq -n --arg desc "$LOG_CONTENT" '{type: "EVASION", description: $desc}')
           curl -X POST -H "Content-Type: application/json" -d "$JSON_PAYLOAD" https://control-parental-server.onrender.com/api/alert
 
       - name: Compilar Proyecto de Android (APK)
