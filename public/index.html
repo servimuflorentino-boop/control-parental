@@ -18,6 +18,40 @@
   <div class="bg-blur-sphere sphere-1"></div>
   <div class="bg-blur-sphere sphere-2"></div>
 
+  <!-- Selector de Rol de Dispositivo (Pantalla Completa en primer inicio) -->
+  <div id="app-mode-selector-overlay" class="modal-overlay" style="display: none; align-items: center; justify-content: center; z-index: 5000;">
+    <div class="auth-box glass-card mode-selector-card animate-bounce-in" style="max-width: 600px !important; padding: 30px;">
+      <header class="auth-header" style="text-align: center; margin-bottom: 24px;">
+        <i data-lucide="shield-check" class="icon-brand text-neon-green" style="width: 48px; height: 48px; margin: 0 auto 10px;"></i>
+        <h2 style="font-size: 22px; font-weight: 800; font-family: 'Outfit';">Configuración de Dispositivo</h2>
+        <p style="color: var(--text-muted); font-size: 13px; margin-top: 6px;">Bienvenido a Control Parental. ¿Cómo deseas configurar este dispositivo físico?</p>
+      </header>
+      
+      <div class="mode-options-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px;">
+        <!-- Tarjeta Modo Padre -->
+        <div class="mode-option-card glass-card" onclick="selectDeviceMode('parent')" style="padding: 20px; border-radius: 12px; cursor: pointer; transition: all 0.3s ease; text-align: center; background: rgba(255,255,255,0.02); border: 1px solid var(--border-glass);">
+          <i data-lucide="user-check" class="mode-icon text-neon-purple" style="width: 32px; height: 32px; color: var(--color-purple); filter: drop-shadow(0 0 8px rgba(139, 92, 246, 0.4)); margin: 0 auto 12px;"></i>
+          <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 8px;">Modo Padre</h3>
+          <p style="font-size: 11px; color: var(--text-muted); line-height: 1.4;">Usa esta opción si este es tu teléfono. Podrás monitorear a tus hijos, establecer límites, horarios y recibir alertas en tiempo real.</p>
+        </div>
+
+        <!-- Tarjeta Modo Hijo -->
+        <div class="mode-option-card glass-card" onclick="selectDeviceMode('child')" style="padding: 20px; border-radius: 12px; cursor: pointer; transition: all 0.3s ease; text-align: center; background: rgba(255,255,255,0.02); border: 1px solid var(--border-glass);">
+          <i data-lucide="smartphone" class="mode-icon text-neon-blue" style="width: 32px; height: 32px; color: var(--color-blue); filter: drop-shadow(0 0 8px rgba(59, 130, 246, 0.4)); margin: 0 auto 12px;"></i>
+          <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 8px;">Modo Hijo</h3>
+          <p style="font-size: 11px; color: var(--text-muted); line-height: 1.4;">Usa esta opción para el teléfono de tu hijo. Protegerá este dispositivo bloqueándolo cuando corresponda y reportando alertas de seguridad.</p>
+        </div>
+      </div>
+
+      <div class="mode-selector-footer" style="text-align: center; border-top: 1px solid var(--border-glass); padding-top: 20px;">
+        <button type="button" class="btn-toggle" onclick="selectDeviceMode('demo')" style="font-size: 12px; padding: 8px 20px; border-radius: 20px; background: rgba(255,255,255,0.04); border: 1px solid var(--border-glass); color: #fff; cursor: pointer; transition: all 0.2s ease;">
+          <i data-lucide="monitor" style="width: 14px; height: 14px; display: inline-block; vertical-align: middle; margin-right: 6px;"></i>
+          Modo Demostración (Ambas pantallas en PC)
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Contenedor Principal en Grid de dos Columnas -->
   <div class="dashboard-grid">
     
@@ -25,6 +59,64 @@
     <!-- LADO IZQUIERDO: CONSOLA DEL PADRE (ADMIN)  -->
     <!-- ========================================== -->
     <section class="glass-card parent-console">
+      <!-- Barra de Perfil SaaS -->
+      <div id="parent-profile-bar" class="parent-profile-bar hidden">
+        <span class="parent-name-display"><i data-lucide="user"></i> <span id="display-parent-name">Cargando...</span></span>
+        <div class="profile-actions">
+          <button class="btn-icon-text" onclick="generatePairingCode()"><i data-lucide="plus-circle"></i> Vincular Celular</button>
+          <button class="btn-icon-text" onclick="resetDeviceMode()"><i data-lucide="refresh-cw"></i> Cambiar Rol</button>
+          <button class="btn-icon-text danger" onclick="handleLogout()"><i data-lucide="log-out"></i> Salir</button>
+        </div>
+      </div>
+
+      <!-- Pantalla de Login / Registro SaaS -->
+      <div id="parent-auth-screen" class="auth-overlay">
+        <div class="auth-box glass-card">
+          <header class="auth-header">
+            <i data-lucide="shield-check" class="icon-brand text-neon-green"></i>
+            <h2>Plataforma de Control Parental</h2>
+            <span class="status-badge"><span class="pulse-dot green"></span> Acceso Comercial SaaS</span>
+          </header>
+          
+          <div class="auth-toggle-buttons">
+            <button id="btn-toggle-login" class="btn-toggle active" onclick="switchAuthMode('login')">Ingresar</button>
+            <button id="btn-toggle-register" class="btn-toggle" onclick="switchAuthMode('register')">Registrarse</button>
+          </div>
+          
+          <!-- Formulario de Login -->
+          <form id="login-form" onsubmit="handleLoginSubmit(event)" class="auth-form active">
+            <div class="form-group">
+              <label><i data-lucide="mail"></i> Correo Electrónico</label>
+              <input type="text" id="login-username" required placeholder="correo@ejemplo.com">
+            </div>
+            <div class="form-group">
+              <label><i data-lucide="lock"></i> Contraseña</label>
+              <input type="password" id="login-password" required placeholder="••••••••">
+            </div>
+            <button type="submit" class="btn-primary auth-submit-btn">Entrar a la Consola</button>
+          </form>
+          
+          <!-- Formulario de Registro -->
+          <form id="register-form" onsubmit="handleRegisterSubmit(event)" class="auth-form">
+            <div class="form-group">
+              <label><i data-lucide="user"></i> Nombre Completo</label>
+              <input type="text" id="register-fullname" required placeholder="Nombre del Padre">
+            </div>
+            <div class="form-group">
+              <label><i data-lucide="mail"></i> Correo Electrónico</label>
+              <input type="text" id="register-username" required placeholder="correo@ejemplo.com">
+            </div>
+            <div class="form-group">
+              <label><i data-lucide="lock"></i> Contraseña</label>
+              <input type="password" id="register-password" required placeholder="Contraseña de acceso">
+            </div>
+            <button type="submit" class="btn-primary auth-submit-btn">Crear Cuenta SaaS</button>
+          </form>
+          
+          <p id="auth-error-message" class="auth-error-text hidden"></p>
+        </div>
+      </div>
+
       <header class="console-header">
         <div class="brand-title">
           <i data-lucide="shield-alert" class="icon-brand"></i>
@@ -58,6 +150,12 @@
         <div id="tab-apps" class="tab-pane active">
           <div class="pane-header">
             <h2>Gestión de Aplicaciones y Límites</h2>
+            <div class="child-selector-container">
+              <label for="child-selector"><i data-lucide="baby"></i> Hijo Monitoreado:</label>
+              <select id="child-selector" onchange="handleActiveChildChange(this.value)">
+                <!-- Llenado dinámicamente -->
+              </select>
+            </div>
             <p>Oculte iconos del escritorio, asigne límites de tiempo diarios y active el monitoreo anti-bullying.</p>
           </div>
           
@@ -209,11 +307,36 @@
       <div class="smartphone-chassis">
         <div class="phone-speaker"></div>
         <div class="phone-screen-container">
+          <!-- Pantalla de Emparejamiento / Configuración del Celular del Menor -->
+          <div id="phone-pairing-screen" class="phone-view pairing-overlay active">
+            <div class="lock-header">
+              <i data-lucide="smartphone" class="lock-icon text-neon-blue"></i>
+              <h2>Emparejar Celular</h2>
+              <p>Ingrese el código de 6 dígitos generado en su Consola Parental.</p>
+            </div>
+            <div class="pairing-form">
+              <div class="form-group-phone">
+                <label>Nombre del Menor:</label>
+                <input type="text" id="pairing-child-name" placeholder="Ej: Matias" value="Matias">
+              </div>
+              <div class="form-group-phone">
+                <label>Código de Vinculación:</label>
+                <input type="text" id="pairing-digit-code" placeholder="------" maxlength="6">
+              </div>
+              <button onclick="handleDevicePairingSubmit()" class="btn-sim-ok" style="width: 100%; margin-top: 15px;">Activar Control</button>
+              <button onclick="resetDeviceMode()" class="btn-toggle" style="width: 100%; margin-top: 10px; font-size: 12px; padding: 8px; background: rgba(255,255,255,0.05); color: #fff; border: 1px solid var(--border-glass);">Cambiar Rol de App</button>
+              <p id="pairing-error-message" class="pairing-error-text hidden"></p>
+            </div>
+          </div>
           
           <!-- 1. Barra de Notificaciones Superior -->
           <div class="phone-status-bar">
             <span class="phone-time" id="sim-time">15:30</span>
             <div class="phone-network-indicators">
+              <!-- Botón de Escape del Rol (Engranaje) -->
+              <div class="network-toggle" onclick="resetDeviceMode()" title="Cambiar Rol de App">
+                <i data-lucide="settings"></i>
+              </div>
               <!-- Botón Datos Móviles -->
               <div id="btn-toggle-data" class="network-toggle active" onclick="toggleChildNetwork('data')">
                 <i data-lucide="arrow-up-down"></i>
@@ -479,6 +602,21 @@
       </div>
     </section>
 
+  </div>
+
+  <!-- Modal para Generar Código de Vinculación -->
+  <div id="pairing-code-modal" class="modal-overlay hidden">
+    <div class="modal-content glass-card">
+      <header class="modal-header">
+        <h3><i data-lucide="link"></i> Emparejar Nuevo Dispositivo</h3>
+        <button onclick="closePairingCodeModal()" class="btn-close-modal"><i data-lucide="x"></i></button>
+      </header>
+      <div class="modal-body">
+        <p>Ingrese este código de 6 dígitos en la pantalla de emparejamiento del celular del menor:</p>
+        <div id="display-pairing-code" class="neon-pairing-code">------</div>
+        <p class="expiry-note">Este código expirará automáticamente en 10 minutos.</p>
+      </div>
+    </div>
   </div>
 
   <!-- Script Principal de Lógica de la App -->
