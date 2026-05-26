@@ -2,6 +2,12 @@
    LÓGICA DEL FRONTEND - CONTROL PARENTAL MULTITENANT SAAS REAL-TIME
    ========================================================================== */
 
+// --- CONFIGURACIÓN DE SERVIDOR API ---
+// Si se ejecuta en navegador local (puerto 6000), usar rutas relativas. De lo contrario, usar el servidor en la nube de Render.
+const API_BASE_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && window.location.port === '6000'
+  ? ''
+  : 'https://control-parental-server.onrender.com';
+
 // --- ESTADOS DE SESIÓN Y SAAS ---
 let parentToken = localStorage.getItem('parent_token') || null;
 let parentUser = JSON.parse(localStorage.getItem('parent_user') || 'null');
@@ -100,7 +106,7 @@ async function handleLoginSubmit(event) {
   const errMsg = document.getElementById('auth-error-message');
 
   try {
-    const response = await fetch('/api/auth/login', {
+    const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, password })
@@ -133,7 +139,7 @@ async function handleRegisterSubmit(event) {
   const errMsg = document.getElementById('auth-error-message');
 
   try {
-    const response = await fetch('/api/auth/register', {
+    const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, password, full_name })
@@ -171,7 +177,7 @@ function handleLogout() {
 // --- GENERACIÓN DE CÓDIGO Y EMPAREJAMIENTO DE DISPOSITIVOS ---
 async function generatePairingCode() {
   try {
-    const response = await fetch('/api/auth/pairing-code', {
+    const response = await fetch(`${API_BASE_URL}/api/auth/pairing-code`, {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',
@@ -206,7 +212,7 @@ async function handleDevicePairingSubmit() {
   }
 
   try {
-    const response = await fetch('/api/auth/pair', {
+    const response = await fetch(`${API_BASE_URL}/api/auth/pair`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ code, child_name })
@@ -241,8 +247,8 @@ async function loadStatus() {
   if (!parentToken) return;
 
   const url = activeChildId 
-    ? `/api/status?child_id=${activeChildId}`
-    : '/api/status';
+    ? `${API_BASE_URL}/api/status?child_id=${activeChildId}`
+    : `${API_BASE_URL}/api/status`;
 
   try {
     const response = await fetch(url, {
@@ -283,7 +289,7 @@ function connectSSE() {
   }
 
   // Pasar el parent_id en los query params para aislar la familia
-  sseSource = new EventSource(`/api/events?parent_id=${parentUser.id}`);
+  sseSource = new EventSource(`${API_BASE_URL}/api/events?parent_id=${parentUser.id}`);
 
   sseSource.onmessage = (event) => {
     try {
@@ -616,7 +622,7 @@ async function toggleEmergencyLock() {
   const newLock = currentLock === 1 ? 0 : 1;
 
   try {
-    const response = await fetch('/api/emergency-lock', {
+    const response = await fetch(`${API_BASE_URL}/api/emergency-lock`, {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',
@@ -640,7 +646,7 @@ async function toggleAppVisibility(appId, checkbox) {
   const is_blocked = checkbox.checked ? 0 : 1; // Checked significa visible
 
   try {
-    const response = await fetch('/api/app-block', {
+    const response = await fetch(`${API_BASE_URL}/api/app-block`, {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',
@@ -662,7 +668,7 @@ async function saveAppRuleSettings(appId) {
   const bully_monitoring = bullyCheck && bullyCheck.checked ? 1 : 0;
 
   try {
-    const response = await fetch('/api/app-limit', {
+    const response = await fetch(`${API_BASE_URL}/api/app-limit`, {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',
@@ -685,7 +691,7 @@ async function saveBedtime(event) {
   const bedtime_end = document.getElementById('bedtime-end').value;
 
   try {
-    const response = await fetch('/api/bedtime', {
+    const response = await fetch(`${API_BASE_URL}/api/bedtime`, {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',
@@ -706,7 +712,7 @@ async function decideInstallation(requestId, status) {
   const bully_monitoring = bullyCheckbox && bullyCheckbox.checked;
 
   try {
-    const response = await fetch('/api/installation-approve', {
+    const response = await fetch(`${API_BASE_URL}/api/installation-approve`, {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',
@@ -922,7 +928,7 @@ async function reportChildUsage(totalMinutes, appUsage) {
   if (!childToken) return;
 
   try {
-    const response = await fetch('/api/child-report', {
+    const response = await fetch(`${API_BASE_URL}/api/child-report`, {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',
@@ -1011,7 +1017,7 @@ function sendSimChatMessage(text) {
       const base64Img = canvas.toDataURL('image/jpeg');
 
       try {
-        await fetch('/api/alert', {
+        await fetch(`${API_BASE_URL}/api/alert`, {
           method: 'POST',
           headers: { 
             'Content-Type': 'application/json',
@@ -1064,7 +1070,7 @@ async function loadWebpage(url, category) {
 
     if (childToken) {
       try {
-        await fetch('/api/alert', {
+        await fetch(`${API_BASE_URL}/api/alert`, {
           method: 'POST',
           headers: { 
             'Content-Type': 'application/json',
@@ -1093,7 +1099,7 @@ async function requestInstall(appName) {
   btn.disabled = true;
 
   try {
-    const response = await fetch('/api/installation-request', {
+    const response = await fetch(`${API_BASE_URL}/api/installation-request`, {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',
@@ -1186,7 +1192,7 @@ async function handlePinDragEnd(event) {
 
     if (childToken) {
       try {
-        await fetch('/api/alert', {
+        await fetch(`${API_BASE_URL}/api/alert`, {
           method: 'POST',
           headers: { 
             'Content-Type': 'application/json',
